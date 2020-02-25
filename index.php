@@ -4,62 +4,34 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="frontend/style.css">
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/all.css" integrity="sha384-mzrmE5qonljUremFsqc01SB46JvROS7bZs3IO2EmfFsd15uHvIt+Y8vEf7N7fWAU" crossorigin="anonymous">
     <title>Quizlet audio converter</title>
 </head>
 <body>
-<?php
-ini_set('max_execution_time', '900');
 
-require_once __DIR__ . '/backend/Converter.php';
-require_once __DIR__ . '/backend/Timer.php';
+<h1>Quizlet Audio
+    <h1></h1>
+        
+        <?php
+        ini_set('max_execution_time', '900');
+        
+        
+        ?>
 
-// DEBUG set false in prod
-$timer = new Timer(true);
-
-$config = include __DIR__ . '/config/public_config.php';
-
-$converter = new Converter($config);
-
-//$quizletUrl = 'https://quizlet.com/es/487468389/test-portugisisch-flash-cards/'; // only quizlet
-//$quizletUrl = 'https://quizlet.com/484664798/french-flash-cards/'; // 100 French words with aws
-$quizletUrl = 'https://quizlet.com/373763301/deutsch-franzosisch-flash-cards/'; // 16 only quizlet
-
-$betweenWordSilenceDuration = 1;
-$nextSetSilenceDuration = 2;
-
-$allCards = $converter->retrieveCardInfos($quizletUrl);
-
-$timer->displayTime('Retrieve card info');
-
-$converter->generateSilence('short-silence.mp3',$betweenWordSilenceDuration);
-$converter->generateSilence('long-silence.mp3',$nextSetSilenceDuration);
-
-$timer->displayTime('Generate silences');
-
-$blockFiles = $converter->prepareAudioBlockFiles($allCards);
-
-$timer->displayTime('prepareAudioBlockFiles');
-
-$converter->createAudioBlocksAndControlFile($blockFiles);
-
-$timer->displayTime('createAudioBlocksAndControlFile');
-
-
-/*$blockFiles = [
-  'block-1',
-  'block-2',
-  'block-3',
-  'block-4',
-  'block-5',
-  
-];*/
-
-$converter->createFinalFile($blockFiles);
-
-$timer->displayTime('createFinalFile');
-
-
-?>
+        <footer>
+            <div class="navbar navbar-expand-sm navbar-light fixed-bottom bg-light site-footer">
+                <div class="mx-auto footerContent">
+                    <p class="navbar-text">Made with
+                        <i class="fas fa-heart"></i> by Samuel Gfeller
+                    </p>
+                    <a href="https://github.com/samuelgfeller/quizlet-audio-converter" class="btn btn-sm btn-light" target="_blank">
+                        <i class="fab fa-github-alt"></i>
+                    </a>
+                </div>
+            </div>
+        </footer>
 </body>
 </html>
 

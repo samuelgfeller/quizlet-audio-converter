@@ -1,6 +1,28 @@
+body {
+    font-family: 'Nunito', sans-serif;
+}
 .timeSpan{
     width: 90%;
     padding: 15px;
     border: 1px solid #cccccc;
     border-radius: 5px;
+}
+.site-footer {
+    font-size: 0.9em;
+    height: 30px;
+}
+
+.footerContent{
+    margin-top: 17px;
+}
+
+.site-footer .fa-heart {
+    font-size: 0.8em;
+    margin-left: 1px;
+    margin-right: 2px;
+}
+
+.site-footer .fa-github-alt {
+    color: grey;
+    font-size: 1.2em;
 }
