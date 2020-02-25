@@ -85,17 +85,17 @@ class Converter
      * Prepare file which contains list of audio files
      * in the right order with silences.
      *
-     * The rule is that each 20 words are played in a loop (21 times).
+     * The rule is that each 20 words are played in a loop (18 times).
      * For that they are grouped and saved in the 2d array allBlocks
      * and written to the corresponding block files and the filenames
      * are returned.
      *
      * @param array $allCards
-     * @return array
+     * @return array text and audio file name without extension
      */
     public function prepareAudioBlockFiles(array $allCards)
     {
-//        $allCards = array_slice($allCards, 0, 5); // for debugging
+        $allCards = array_slice($allCards, 0, 1); // for debugging
         
         $cardsAmount = count($allCards);
         $allBlocks = [];
@@ -179,5 +179,50 @@ class Converter
             $this->config['output_dir'] . '/' . $inputFileListName . ' -c copy ' . $this->config['output_dir'] . '/' . $outputName;
         echo '<textarea rows="5" cols="200" onclick="this.focus();this.select()" readonly="readonly">' . $cmd . '</textarea>';
         shell_exec($cmd);
+    }
+    
+    /**
+     * The control file is an audio document
+     * with all words without duplication
+     *
+     * @param $blockFiles array text and audio file name without extension
+     */
+    public function createAudioBlocksAndControlFile($blockFiles)
+    {
+        $linesForControlFile = [];
+        foreach ($blockFiles as $file){
+            $this->concatAndOutputAudio($file.'.txt',$file.'.mp3');
+            // The files are in the output so the relative path to this file is just the file name
+            $linesForControlFile[] = "file '$file.mp3'";
+        }
+        
+        file_put_contents($this->config['output_dir'] . '/control-file.txt', implode(PHP_EOL, $linesForControlFile));
+        
+        $this->concatAndOutputAudio('control-file.txt','control.mp3');
+    }
+    
+    /**
+     * Create final file where each block is
+     * redundantly played 18 times
+     *
+     * @param $blockFiles array text and audio file name without extension
+     */
+    public function createFinalFile($blockFiles)
+    {
+        $linesForFinalFile = [];
+        foreach ($blockFiles as $file){
+            for ($i=0; $i<18;$i++) {
+                // mp3 files are created while control file is created
+                // The files are in the output so the relative path to this file is just the file name
+                $linesForFinalFile[] = "file '$file.mp3'";
+            }
+            $linesForFinalFile[] = "file '../silences/long-silence.mp3'";
+            $linesForFinalFile[] = "file '../silences/long-silence.mp3'";
+            $linesForFinalFile[] = "file '../silences/long-silence.mp3'";
+        }
+    
+        file_put_contents($this->config['output_dir'] . '/final-file.txt', implode(PHP_EOL, $linesForFinalFile));
+    
+        $this->concatAndOutputAudio('final-file.txt','final.mp3');
     }
 }
