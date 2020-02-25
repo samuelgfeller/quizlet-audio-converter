@@ -95,7 +95,7 @@ class Converter
      */
     public function prepareAudioBlockFiles(array $allCards)
     {
-        $allCards = array_slice($allCards, 0, 1); // for debugging
+//        $allCards = array_slice($allCards, 0, 41); // for debugging
         
         $cardsAmount = count($allCards);
         $allBlocks = [];
@@ -124,7 +124,7 @@ class Converter
             $iteratingBlockValues[] = "file '$this->relativeSilenceDir/long-silence.mp3'";
             $iteratingBlockValues[] = "file '".($wordExternal ? $this->convertSampleRate($wordAudioUrl,$key.'-word.mp3') : $wordAudioUrl)."'";
             $iteratingBlockValues[] = "file '$this->relativeSilenceDir/short-silence.mp3'";
-            $iteratingBlockValues[] = "file '".($wordExternal ? $this->convertSampleRate($definitionAudioUrl,$key.'-def.mp3') : $definitionAudioUrl) ."'";
+            $iteratingBlockValues[] = "file '".($definitionExternal ? $this->convertSampleRate($definitionAudioUrl,$key.'-def.mp3') : $definitionAudioUrl) ."'";
             //    echo '<a href="'.$wordAudioUrl.'">'.$card['word'].'</a> | <a href="'.$definitionAudioUrl.'">'.$card['definition'].'</a><br>';
             
             // 4 lines are added each time so to have 20 words the number has to be multiplied by 4
@@ -177,7 +177,7 @@ class Converter
     {
         $cmd = 'ffmpeg -f concat -safe 0 -protocol_whitelist file,http,https,tcp,tls -y -i ' .
             $this->config['output_dir'] . '/' . $inputFileListName . ' -c copy ' . $this->config['output_dir'] . '/' . $outputName;
-        echo '<textarea rows="5" cols="200" onclick="this.focus();this.select()" readonly="readonly">' . $cmd . '</textarea>';
+//        echo '<textarea rows="5" cols="200" onclick="this.focus();this.select()" readonly="readonly">' . $cmd . '</textarea>';
         shell_exec($cmd);
     }
     
