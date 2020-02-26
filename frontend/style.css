@@ -2,18 +2,41 @@ body {
     font-family: 'Nunito', sans-serif;
 }
 
-h1{
+#pageHeader{
     text-align: center;
-    font-size: 2em;
-    color: darkblue;
+    font-size: 6em;
+    color: #526ce1;
+    padding: 7%;
+    /*font-weight: bold;*/
 }
 
+form{
+    width: 100%;
+    margin-top: 4vh;
+}
+#linkInput{
+    width: 70%;
+    padding: 10px;
+    border-radius: 999px;
+    border: 1px solid #cccccc;
+    outline: none;
+    display: block;
+    box-sizing: border-box; /*avoid that border and padding are taken from with and its more than 100%*/
+    margin: 0 auto;
+}
+
+/*Debugging*/
 .timeSpan{
     width: 90%;
     padding: 15px;
     border: 1px solid #cccccc;
     border-radius: 5px;
+    box-sizing: border-box; /*avoid that border and padding are taken from with and its more than 100%*/
+
 }
+
+/*Footer*/
+
 .site-footer {
     font-size: 0.9em;
     height: 30px;

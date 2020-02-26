@@ -11,14 +11,15 @@
 </head>
 <body>
 
-<h1>Quizlet Audio
-    <h1></h1>
-        
+<h1 id="pageHeader">Quizlet Audio</h1>
+
+<form action="">
+    <input id="linkInput" type="text" placeholder="Quizlet Karten-Link">
+</form>
+
+
         <?php
-        ini_set('max_execution_time', '900');
-        
-        
-        ?>
+        ini_set('max_execution_time', '900');        ?>
 
         <footer>
             <div class="navbar navbar-expand-sm navbar-light fixed-bottom bg-light site-footer">
