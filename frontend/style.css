@@ -1,7 +1,12 @@
 body {
+    background: whitesmoke;
     font-family: 'Nunito', sans-serif;
-}
 
+}
+*{
+    color: #5a5a5a;
+
+}
 #pageHeader{
     text-align: center;
     font-size: 6em;
@@ -14,16 +19,114 @@ form{
     width: 100%;
     margin-top: 4vh;
 }
+.input{
+    border: 1px solid #dbdbdb;
+    font-family: 'Questrial', sans-serif;
+    font-size: 1.3em;
+    outline: none;
+    text-align: center;
+
+
+}
 #linkInput{
     width: 70%;
-    padding: 10px;
+    padding: 10px 20px;
     border-radius: 999px;
-    border: 1px solid #cccccc;
-    outline: none;
     display: block;
     box-sizing: border-box; /*avoid that border and padding are taken from with and its more than 100%*/
     margin: 0 auto;
 }
+
+.input::placeholder{
+    color: #c1c1c1;
+}
+.input:hover{
+    border: 1px solid #c2c2c2;
+}
+.input:hover::placeholder{
+    color: #aeaeae;
+}
+
+.input:focus{
+    border: 1px solid #b5b5b5;
+    box-shadow: 0 0 20px #f4f4f4;
+}
+
+.silencesDiv{
+    margin: 5vh auto;
+    width: 50%;
+    text-align: center;
+}
+.silenceDiv{
+    display: inline-block;
+    width: 49%;
+}
+.silenceInput{
+    margin: auto;
+    display: block;
+    padding: 5px;
+    width: 50px;
+    border-radius: 15px;
+    -moz-appearance:textfield;
+}
+/* Chrome, Safari, Edge, Opera */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+}
+
+/* CHECKBOX*/
+.testFieldDiv{
+    margin: auto;
+    width: 50%;
+    text-align: center;
+}
+
+#testInput{
+    display: block;
+    margin: auto;
+    padding: 10px;
+}
+.label{
+    display: block;
+}
+
+label input {
+    visibility: hidden;/* <-- Hide the default checkbox. The rest is to hide and allow tabbing, which display:none prevents */
+    display: block;
+    height: 0;
+    width: 0;
+    position: absolute;
+    overflow: hidden;
+}
+label span {/* <-- Style the artificial checkbox */
+    height: 30px;
+    width: 30px;
+    border: 1px solid #b5b5b5;
+    border-radius: 10px;
+
+    display: inline-block;
+}
+[type=checkbox]:checked + span {/* <-- Style its checked state */
+    background: #526ce1;
+    border: 1px solid #526ce1;
+
+}
+
+#submitBtn{
+margin: 5vh auto;
+    background: white;
+    border-radius: 999px;
+    padding: 5px 35px;
+    display: block;
+    border: 3px solid #526ce1;
+
+}
+#submitBtn:hover {
+    background: #526ce1;
+    color: white;
+}
+
 
 /*Debugging*/
 .timeSpan{
@@ -55,4 +158,13 @@ form{
 .site-footer .fa-github-alt {
     color: grey;
     font-size: 1.2em;
+}
+
+.navbar-expand-sm-test{
+    flex-flow: row nowrap;
+    -ms-flex-pack: start;
+    justify-content: flex-start;}
+
+@media (max-width: 576px){
+
 }
