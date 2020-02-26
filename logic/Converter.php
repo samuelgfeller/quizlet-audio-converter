@@ -80,7 +80,7 @@ class Converter
         shell_exec($cmd);
         return $relativeWordOutputDir.'/'.$outputName;
     }
-    
+
     /**
      * Prepare file which contains list of audio files
      * in the right order with silences.
@@ -91,12 +91,15 @@ class Converter
      * are returned.
      *
      * @param array $allCards
+     * @param bool $isTest set if only 10 cards should be treated
      * @return array text and audio file name without extension
      */
-    public function prepareAudioBlockFiles(array $allCards)
+    public function prepareAudioBlockFiles(array $allCards,bool $isTest = false)
     {
-//        $allCards = array_slice($allCards, 0, 41); // for debugging
-        
+        if ($isTest === true) {
+            $allCards = array_slice($allCards, 0, 10);
+        }
+
         $cardsAmount = count($allCards);
         $allBlocks = [];
         $iteratingBlockValues = [];

@@ -11,28 +11,29 @@
     <link href="https://fonts.googleapis.com/css?family=Questrial&display=swap" rel="stylesheet">
 
 
-    <title>Quizlet audio converter</title>
+    <title>Quizlet Audio</title>
 </head>
 <body>
 
 <h1 id="pageHeader">Quizlet Audio</h1>
 
-<form action="">
-    <input id="linkInput" class="input" type="text" placeholder="Lernset Link" required>
-    <div class="silencesDiv">
+<form action="frontend/convert_page.php" method="post">
+    <input id="linkInput" class="input" name="quizletLink" type="text" placeholder="Lernset Link"
+           value="https://quizlet.com/373763301/deutsch-franzosisch-flash-cards/" required>
+    <div class="allSilenceInputDiv">
         <div class="silenceDiv">
             <label for="shortSilenceInput">Pause zwischen Begriffe</label>
-            <input id="shortSilenceInput" class="silenceInput input" type="number" placeholder="" required>
+            <input id="shortSilenceInput" name="shortSilenceDuration" class="silenceInput input" type="number" value="1" required>
         </div>
         <div class="silenceDiv">
-            <label for="longSilenceInput">Pause zwischen Wortpaar</label>
-            <input id="longSilenceInput" class="silenceInput input" type="number" placeholder="" required>
+            <label for="longSilenceInput">Pause zu nächstem Wortpaar</label>
+            <input id="longSilenceInput" name="longSilenceDuration" class="silenceInput input" type="number" value="2" required>
         </div>
     </div>
     <div class="testFieldDiv">
         <label for="testInput" class="label">Test (nur 10 Karten)</label>
         <label>
-            <input id="testInput" class="input" type="checkbox" placeholder="">
+            <input id="testInput" name="isTest" class="input" type="checkbox" placeholder="">
             <span></span>
         </label>
     </div>
@@ -41,12 +42,9 @@
 
 </form>
 
-
-<?php
-ini_set('max_execution_time', '900'); ?>
-
+<div class="scrollableVoid"></div>
 <footer>
-    <div class="navbar navbar-expand-sm navbar-light fixed-bottom bg-light site-footer">
+    <div class="navbar navbar-expand-sm navbar-light bg-light fixed-bottom site-footer">
         <div class="mx-auto footerContent">
             <p class="navbar-text">Made with
                 <i class="fas fa-heart"></i> by Samuel Gfeller

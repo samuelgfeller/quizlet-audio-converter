@@ -1,10 +1,14 @@
 body {
-    background: whitesmoke;
+    /*background: whitesmoke;*/
+    /*font-family: 'Questrial', sans-serif;*/
     font-family: 'Nunito', sans-serif;
+
 
 }
 *{
     color: #5a5a5a;
+    /*font-family: 'Nunito', sans-serif;*/
+    /*font-family: 'Questrial', sans-serif;*/
 
 }
 #pageHeader{
@@ -12,7 +16,9 @@ body {
     font-size: 6em;
     color: #526ce1;
     padding: 7%;
-    /*font-weight: bold;*/
+    font-family: 'Nunito', sans-serif;
+
+    font-weight: bold;
 }
 
 form{
@@ -41,18 +47,18 @@ form{
     color: #c1c1c1;
 }
 .input:hover{
-    border: 1px solid #c2c2c2;
+    border: 1px solid #aeaeae;
 }
 .input:hover::placeholder{
-    color: #aeaeae;
+    color: #a2a2a2;
 }
 
 .input:focus{
-    border: 1px solid #b5b5b5;
-    box-shadow: 0 0 20px #f4f4f4;
+    border: 1px solid #9e9e9e;
+    box-shadow: 0 0 20px #eaeaea;
 }
 
-.silencesDiv{
+.allSilenceInputDiv{
     margin: 5vh auto;
     width: 50%;
     text-align: center;
@@ -78,7 +84,7 @@ input::-webkit-inner-spin-button {
 /* CHECKBOX*/
 .testFieldDiv{
     margin: auto;
-    width: 50%;
+    width: 30%;
     text-align: center;
 }
 
@@ -114,7 +120,7 @@ label span {/* <-- Style the artificial checkbox */
 }
 
 #submitBtn{
-margin: 5vh auto;
+margin: 5vh auto ;
     background: white;
     border-radius: 999px;
     padding: 5px 35px;
@@ -130,7 +136,7 @@ margin: 5vh auto;
 
 /*Debugging*/
 .timeSpan{
-    width: 90%;
+    width: 100%;
     padding: 15px;
     border: 1px solid #cccccc;
     border-radius: 5px;
@@ -143,10 +149,15 @@ margin: 5vh auto;
 .site-footer {
     font-size: 0.9em;
     height: 30px;
+
+    /*background: #f6f9fc;*/
 }
+
 
 .footerContent{
     margin-top: 17px;
+    font-family: 'Nunito', sans-serif;
+
 }
 
 .site-footer .fa-heart {
@@ -160,11 +171,32 @@ margin: 5vh auto;
     font-size: 1.2em;
 }
 
-.navbar-expand-sm-test{
-    flex-flow: row nowrap;
-    -ms-flex-pack: start;
-    justify-content: flex-start;}
 
 @media (max-width: 576px){
+    .site-footer{
+        /*background: white;*/
+        /*display: none;*/
+    }
 
+    #pageHeader{
+        font-size: 3em;
+    }
+    #linkInput{
+        width: 95%;
+        padding: 5px 10px;
+    }
+    .allSilenceInputDiv{
+        width: 95%;
+        margin-top: 2vh;
+    }
+    .silenceDiv{
+        width: 100%;
+        margin-top: 4vh;
+    }
+    .testFieldDiv{
+        width: 95%;
+    }
+    .scrollableVoid{
+        padding: 5vh;
+    }
 }
