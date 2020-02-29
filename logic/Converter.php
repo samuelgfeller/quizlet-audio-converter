@@ -122,26 +122,36 @@ class Converter
                 $definitionAudioUrl = $card['_definitionAudioUrl'];
                 $definitionExternal = true;
             }
+
+//           // todo try auto_convert http://ffmpeg.org/ffmpeg-formats.html#Options
             
             // Relative paths are mandatory for the command
             $iteratingBlockValues[] = "file '$this->relativeSilenceDir/long-silence.mp3'";
             $iteratingBlockValues[] = "file '".($wordExternal ? $this->convertSampleRate($wordAudioUrl,$key.'-word.mp3') : $wordAudioUrl)."'";
             $iteratingBlockValues[] = "file '$this->relativeSilenceDir/short-silence.mp3'";
             $iteratingBlockValues[] = "file '".($definitionExternal ? $this->convertSampleRate($definitionAudioUrl,$key.'-def.mp3') : $definitionAudioUrl) ."'";
+            $linesPerWordPair = 4; // depending on silences
+            $amountCardsInBlock = 20;
+
+//            $cmd = 'ffmpeg -protocol_whitelist file,http,https,tcp,tls,crypto -y -i "'.$wordAudioUrl.'" '.$this->config['output_dir'].'/words/'.$card['word'].'.mp3';
+//            $cmd1 = 'ffmpeg -protocol_whitelist file,http,https,tcp,tls,crypto -y -i "'.$definitionAudioUrl.'" '.$this->config['output_dir'].'/words/'.$card['definition'].'.mp3';
+//            var_dump($cmd,$cmd1);
+//            shell_exec($cmd);
+//            shell_exec($cmd1);
             //    echo '<a href="'.$wordAudioUrl.'">'.$card['word'].'</a> | <a href="'.$definitionAudioUrl.'">'.$card['definition'].'</a><br>';
             
             // 4 lines are added each time so to have 20 words the number has to be multiplied by 4
             // Check array contains
-            if ($cardsAmount >= 20 && count($iteratingBlockValues) === 80) {
+            if ($cardsAmount >= $amountCardsInBlock && count($iteratingBlockValues) === $amountCardsInBlock * $linesPerWordPair) {
                 // Save the cards from the first block to the general array
                 $allBlocks[] = $iteratingBlockValues;
                 
                 // Reset cards for iterating block
                 $iteratingBlockValues = [];
                 // Remove 20 to the card amount
-                $cardsAmount -= 20;
+                $cardsAmount -= $amountCardsInBlock;
             } // If the amount of cards is less than 20 a block has to be filled with the last cards
-            elseif ($cardsAmount < 20 && count($iteratingBlockValues) === $cardsAmount * 4) {
+            elseif ($cardsAmount < $amountCardsInBlock && count($iteratingBlockValues) === $cardsAmount * $linesPerWordPair) {
                 // Save the cards from the first block to the general array
                 $allBlocks[] = $iteratingBlockValues;
                 // Reset cards for iterating block
