@@ -49,4 +49,6 @@ if (isset($_POST['shortSilenceDuration'], $_POST['longSilenceDuration'], $_POST[
 
     $timer->displayTime('createFinalFile');
 
+    $converter->deleteWordsFolder();
+
 }

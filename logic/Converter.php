@@ -6,10 +6,13 @@ class Converter
     private $config;
     private $relativeSilenceDir = '../silences';
     private $relativeOutputDir = '../output';
-    
+    private $staticWordOutputDir;
+
+
     public function __construct($config)
     {
         $this->config = $config;
+        $this->staticWordOutputDir = $config['output_dir'].'/words';
     }
     
     /**
@@ -72,12 +75,11 @@ class Converter
      */
     public function convertSampleRate(string $inputFile, string $outputName): string
     {
-        $staticWordOutputDir = $this->config['output_dir'].'/words';
         $relativeWordOutputDir = $this->relativeOutputDir.'/words';
-        $this->createDirectory($staticWordOutputDir);
+        $this->createDirectory($this->staticWordOutputDir);
 
         // Put sample rate to 32000 AND channel layout to stereo
-        $cmd = 'ffmpeg -protocol_whitelist file,http,https,tcp,tls,crypto -y -i "'.$inputFile.'" -ar 32000 -ac 2 '.$staticWordOutputDir.'/'.$outputName. '> wtf.txt';
+        $cmd = 'ffmpeg -protocol_whitelist file,http,https,tcp,tls,crypto -y -i "'.$inputFile.'" -ar 32000 -ac 2 '.$this->staticWordOutputDir.'/'.$outputName. '> wtf.txt';
         shell_exec($cmd);
         return $relativeWordOutputDir.'/'.$outputName;
     }
@@ -228,5 +230,15 @@ class Converter
         file_put_contents($this->config['output_dir'] . '/final-file.txt', implode(PHP_EOL, $linesForFinalFile));
     
         $this->concatAndOutputAudio('final-file.txt','final.mp3');
+    }
+
+    /**
+     * All the words are stored in the words folder
+     * and they get deleted with this function
+     */
+    public function deleteWordsFolder()
+    {
+        array_map('unlink', glob($this->staticWordOutputDir.'/*.*'));
+//        rmdir($dirname);
     }
 }
