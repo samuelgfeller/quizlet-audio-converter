@@ -22,12 +22,20 @@ a{
 
     font-weight: bold;
 }
-#downloadIcon{
-    position: absolute;
+.downloadIcon{
     width: 80px;
+
+    opacity: 0.3;
+}
+#downloadIcon{
+    display: block;
     right: 40px;
     top: 30px;
-    opacity: 0.3;
+    position: absolute;
+}
+#downloadIconResponsive{
+    display: none;
+    text-align: center;
 }
 
 form{
@@ -181,6 +189,16 @@ margin: 5vh auto ;
     font-size: 1.2em;
 }
 
+@media (max-width: 840px) {
+    #downloadIcon{
+        display: none;
+    }
+    #downloadIconResponsive{
+        display: block;
+        position: relative;
+        margin:auto;
+    }
+}
 
 @media (max-width: 576px){
     .site-footer{
@@ -209,4 +227,6 @@ margin: 5vh auto ;
     .scrollableVoid{
         padding: 5vh;
     }
+
+
 }

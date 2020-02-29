@@ -14,12 +14,12 @@
     <title>Quizlet Audio</title>
 </head>
 <body>
-<a href="frontend/last_downloaded.php"><img id="downloadIcon" src="frontend/img/download_icon.png" alt="Download"></a>
+<a href="frontend/last_downloaded.php" ><img class="downloadIcon" id="downloadIcon" src="frontend/img/download_icon.png" alt="Download"></a>
 
 <h1 id="pageHeader">Quizlet Audio</h1>
 
 <form action="frontend/convert_page.php" method="post">
-    <input id="linkInput" class="input" name="quizletLink" type="text" placeholder="Lernset Link"
+    <input id="linkInput" class="input" name="quizletLink" type="text" placeholder="Lernset Link" onClick="this.select();"
            value="https://quizlet.com/373763301/deutsch-franzosisch-flash-cards/" required>
     <div class="allSilenceInputDiv">
         <div class="silenceDiv">
@@ -42,6 +42,8 @@
     <button type="submit" id="submitBtn" class="input">Audio generieren</button>
 
 </form>
+
+<a href="frontend/last_downloaded.php"><img class="downloadIcon" id="downloadIconResponsive" src="frontend/img/download_icon.png" alt="Download"></a>
 
 <div class="scrollableVoid"></div>
 <footer>
