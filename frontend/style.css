@@ -9,7 +9,9 @@ body {
     color: #5a5a5a;
     /*font-family: 'Nunito', sans-serif;*/
     /*font-family: 'Questrial', sans-serif;*/
-
+}
+a{
+    text-decoration: none;
 }
 #pageHeader{
     text-align: center;
@@ -19,6 +21,13 @@ body {
     font-family: 'Nunito', sans-serif;
 
     font-weight: bold;
+}
+#downloadIcon{
+    position: absolute;
+    width: 80px;
+    right: 40px;
+    top: 30px;
+    opacity: 0.3;
 }
 
 form{
@@ -126,6 +135,7 @@ margin: 5vh auto ;
     padding: 5px 35px;
     display: block;
     border: 3px solid #526ce1;
+    outline: none;
 
 }
 #submitBtn:hover {
@@ -134,8 +144,8 @@ margin: 5vh auto ;
 }
 
 
-/*Debugging*/
-.timeSpan{
+/* For time and results*/
+.infoP{
     width: 100%;
     padding: 15px;
     border: 1px solid #cccccc;

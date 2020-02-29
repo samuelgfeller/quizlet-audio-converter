@@ -15,7 +15,7 @@ class Timer
     public function displayTime($message)
     {
         if ($this->trackTime === true) {
-            echo '<p class="timeSpan">'.$message . ': <b>' . (hrtime(true) - $this->startTimeStamp) / 1e+9 . 's</b></p>';
+            echo '<p class="infoP">'.$message . ': <b>' . (hrtime(true) - $this->startTimeStamp) / 1e+9 . 's</b></p>';
         }
     }
 }
