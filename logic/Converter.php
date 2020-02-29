@@ -38,7 +38,7 @@ class Converter
     {
         $this->createDirectory($this->config['silence_dir']);
         
-        $cmd = 'ffmpeg -f lavfi -y -i anullsrc=channel_layout=stereo:sample_rate=32000 -b:a 48K -t ' . $duration . ' ' . $this->config['silence_dir'] . '/' . $silenceName;
+        $cmd = 'ffmpeg -f lavfi -y -i anullsrc=channel_layout=5.1:sample_rate=32000 -b:a 48K -t ' . $duration . ' ' . $this->config['silence_dir'] . '/' . $silenceName;
         shell_exec($cmd);
     }
     
@@ -104,6 +104,11 @@ class Converter
         $cardsAmount = count($allCards);
         $allBlocks = [];
         $iteratingBlockValues = [];
+
+        $linesPerWordPair = 4; // depending on silences and which words are put into the array
+        $amountCardsInBlock = 20;
+        $cardWithNoAudioAmount = 0; // If the word or definition contains no url one is added to this var
+
         foreach ($allCards as $key => $card) {
             // The URL is either without the base (when its quizlet.com domain) or full url when the audio is on amazon server
             $wordAudioUrl = strpos(
@@ -117,17 +122,18 @@ class Converter
 
             // Relative paths are mandatory for the command
             $iteratingBlockValues[] = "file '$this->relativeSilenceDir/long-silence.mp3'";
-            $iteratingBlockValues[] = "file '".$this->convertSampleRate($wordAudioUrl,$key.'-word.mp3')."'";
+            $card['_wordAudioUrl'] !== null ?
+                $iteratingBlockValues[] = "file '" . $this->convertSampleRate($wordAudioUrl, $key . '-word.mp3') . "'"  : $cardWithNoAudioAmount++;
             $iteratingBlockValues[] = "file '$this->relativeSilenceDir/short-silence.mp3'";
-            $iteratingBlockValues[] = "file '".$this->convertSampleRate($definitionAudioUrl,$key.'-def.mp3') ."'";
-            $linesPerWordPair = 4; // depending on silences
-            $amountCardsInBlock = 20;
+            $card['_definitionAudioUrl'] !== null ?
+                $iteratingBlockValues[] = "file '".$this->convertSampleRate($definitionAudioUrl,$key.'-def.mp3') ."'" : $cardWithNoAudioAmount++ ;
+
 
             //    echo '<a href="'.$wordAudioUrl.'">'.$card['word'].'</a> | <a href="'.$definitionAudioUrl.'">'.$card['definition'].'</a><br>';
             
             // 4 lines are added each time so to have 20 words the number has to be multiplied by 4
             // Check array contains
-            if ($cardsAmount >= $amountCardsInBlock && count($iteratingBlockValues) === $amountCardsInBlock * $linesPerWordPair) {
+            if ($cardsAmount >= $amountCardsInBlock && count($iteratingBlockValues) === ($amountCardsInBlock * $linesPerWordPair) - $cardWithNoAudioAmount) {
                 // Save the cards from the first block to the general array
                 $allBlocks[] = $iteratingBlockValues;
                 
@@ -136,7 +142,7 @@ class Converter
                 // Remove 20 to the card amount
                 $cardsAmount -= $amountCardsInBlock;
             } // If the amount of cards is less than 20 a block has to be filled with the last cards
-            elseif ($cardsAmount < $amountCardsInBlock && count($iteratingBlockValues) === $cardsAmount * $linesPerWordPair) {
+            elseif ($cardsAmount < $amountCardsInBlock && count($iteratingBlockValues) === ($cardsAmount * $linesPerWordPair) - $cardWithNoAudioAmount) {
                 // Save the cards from the first block to the general array
                 $allBlocks[] = $iteratingBlockValues;
                 // Reset cards for iterating block
