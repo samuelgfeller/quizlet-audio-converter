@@ -38,7 +38,7 @@ class Converter
     {
         $this->createDirectory($this->config['silence_dir']);
         
-        $cmd = 'ffmpeg -f lavfi -y -i anullsrc=channel_layout=5.1:sample_rate=32000 -t ' . $duration . ' ' . $this->config['silence_dir'] . '/' . $silenceName;
+        $cmd = 'ffmpeg -f lavfi -y -i anullsrc=channel_layout=mono:sample_rate=32000 -b:a 48K -t ' . $duration . ' ' . $this->config['silence_dir'] . '/' . $silenceName;
         shell_exec($cmd);
     }
     
@@ -123,8 +123,7 @@ class Converter
                 $definitionExternal = true;
             }
 
-//           // todo try auto_convert http://ffmpeg.org/ffmpeg-formats.html#Options
-            
+
             // Relative paths are mandatory for the command
             $iteratingBlockValues[] = "file '$this->relativeSilenceDir/long-silence.mp3'";
             $iteratingBlockValues[] = "file '".($wordExternal ? $this->convertSampleRate($wordAudioUrl,$key.'-word.mp3') : $wordAudioUrl)."'";
