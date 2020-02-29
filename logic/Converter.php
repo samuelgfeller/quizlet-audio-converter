@@ -38,7 +38,7 @@ class Converter
     {
         $this->createDirectory($this->config['silence_dir']);
         
-        $cmd = 'ffmpeg -f lavfi -y -i anullsrc=channel_layout=mono:sample_rate=32000 -b:a 48K -t ' . $duration . ' ' . $this->config['silence_dir'] . '/' . $silenceName;
+        $cmd = 'ffmpeg -f lavfi -y -i anullsrc=channel_layout=stereo:sample_rate=32000 -b:a 48K -t ' . $duration . ' ' . $this->config['silence_dir'] . '/' . $silenceName;
         shell_exec($cmd);
     }
     
@@ -75,8 +75,9 @@ class Converter
         $staticWordOutputDir = $this->config['output_dir'].'/words';
         $relativeWordOutputDir = $this->relativeOutputDir.'/words';
         $this->createDirectory($staticWordOutputDir);
-        
-        $cmd = 'ffmpeg -protocol_whitelist file,http,https,tcp,tls,crypto -y -i "'.$inputFile.'" -ar 32000 '.$staticWordOutputDir.'/'.$outputName. '> wtf.txt';
+
+        // Put sample rate to 32000 AND channel layout to stereo
+        $cmd = 'ffmpeg -protocol_whitelist file,http,https,tcp,tls,crypto -y -i "'.$inputFile.'" -ar 32000 -ac 2 '.$staticWordOutputDir.'/'.$outputName. '> wtf.txt';
         shell_exec($cmd);
         return $relativeWordOutputDir.'/'.$outputName;
     }
@@ -104,39 +105,24 @@ class Converter
         $allBlocks = [];
         $iteratingBlockValues = [];
         foreach ($allCards as $key => $card) {
-            // Are the definition and word audio hosted externally or not? (if yes they have a different sample rate than quizlet has)
-            $wordExternal = false;
-            $definitionExternal = false;
-            // Set audio urls with default value as with quizlet domain
-            $wordAudioUrl = $this->config['quizlet_domain'] . $card['_wordAudioUrl'];
-            $definitionAudioUrl = $this->config['quizlet_domain'] . $card['_definitionAudioUrl'];
-            
             // The URL is either without the base (when its quizlet.com domain) or full url when the audio is on amazon server
-            if (strpos($card['_wordAudioUrl'],'http') !== false){
-                // Full url is in the _wordAudioUrl
-                $wordAudioUrl =  $card['_wordAudioUrl'];
-                $wordExternal = true;
-            }
-            if (strpos($card['_definitionAudioUrl'],'http') !== false){
-                // Full url is in the _wordAudioUrl
-                $definitionAudioUrl = $card['_definitionAudioUrl'];
-                $definitionExternal = true;
-            }
-
+            $wordAudioUrl = strpos(
+                $card['_wordAudioUrl'],
+                'http'
+            ) !== false ? $card['_wordAudioUrl'] : $this->config['quizlet_domain'] . $card['_wordAudioUrl'];
+            $definitionAudioUrl = strpos(
+                $card['_definitionAudioUrl'],
+                'http'
+            ) !== false ? $card['_definitionAudioUrl'] : $this->config['quizlet_domain'] . $card['_definitionAudioUrl'];
 
             // Relative paths are mandatory for the command
             $iteratingBlockValues[] = "file '$this->relativeSilenceDir/long-silence.mp3'";
-            $iteratingBlockValues[] = "file '".($wordExternal ? $this->convertSampleRate($wordAudioUrl,$key.'-word.mp3') : $wordAudioUrl)."'";
+            $iteratingBlockValues[] = "file '".$this->convertSampleRate($wordAudioUrl,$key.'-word.mp3')."'";
             $iteratingBlockValues[] = "file '$this->relativeSilenceDir/short-silence.mp3'";
-            $iteratingBlockValues[] = "file '".($definitionExternal ? $this->convertSampleRate($definitionAudioUrl,$key.'-def.mp3') : $definitionAudioUrl) ."'";
+            $iteratingBlockValues[] = "file '".$this->convertSampleRate($definitionAudioUrl,$key.'-def.mp3') ."'";
             $linesPerWordPair = 4; // depending on silences
             $amountCardsInBlock = 20;
 
-//            $cmd = 'ffmpeg -protocol_whitelist file,http,https,tcp,tls,crypto -y -i "'.$wordAudioUrl.'" '.$this->config['output_dir'].'/words/'.$card['word'].'.mp3';
-//            $cmd1 = 'ffmpeg -protocol_whitelist file,http,https,tcp,tls,crypto -y -i "'.$definitionAudioUrl.'" '.$this->config['output_dir'].'/words/'.$card['definition'].'.mp3';
-//            var_dump($cmd,$cmd1);
-//            shell_exec($cmd);
-//            shell_exec($cmd1);
             //    echo '<a href="'.$wordAudioUrl.'">'.$card['word'].'</a> | <a href="'.$definitionAudioUrl.'">'.$card['definition'].'</a><br>';
             
             // 4 lines are added each time so to have 20 words the number has to be multiplied by 4
@@ -188,7 +174,7 @@ class Converter
     public function concatAndOutputAudio(string $inputFileListName, string $outputName)
     {
         $cmd = 'ffmpeg -f concat -safe 0 -protocol_whitelist file,http,https,tcp,tls -y -i ' .
-            $this->config['output_dir'] . '/' . $inputFileListName . ' -c copy ' . $this->config['output_dir'] . '/' . $outputName;
+            $this->config['output_dir'] . '/' . $inputFileListName . ' -b:a 48K -c copy ' . $this->config['output_dir'] . '/' . $outputName;
 //        echo '<textarea rows="5" cols="200" onclick="this.focus();this.select()" readonly="readonly">' . $cmd . '</textarea>';
         shell_exec($cmd);
     }
