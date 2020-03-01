@@ -3,32 +3,42 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="frontend/style.css">
+    <link rel="stylesheet" href="frontend/css/style.css">
+    <link rel="stylesheet" href="frontend/css/loader.css">
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" rel="stylesheet"
           integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/all.css"
           integrity="sha384-mzrmE5qonljUremFsqc01SB46JvROS7bZs3IO2EmfFsd15uHvIt+Y8vEf7N7fWAU" crossorigin="anonymous">
+    <script
+            src="https://code.jquery.com/jquery-3.4.1.min.js"
+            integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
+            crossorigin="anonymous"></script>
     <link href="https://fonts.googleapis.com/css?family=Questrial&display=swap" rel="stylesheet">
 
 
     <title>Quizlet Audio</title>
 </head>
 <body>
-<a href="frontend/last_downloaded.php" ><img class="downloadIcon" id="downloadIcon" src="frontend/img/download_icon.png" alt="Download"></a>
+
+<a href="frontend/last_downloaded.php"><img class="downloadIcon" id="downloadIcon"
+                                            src="frontend/img/download_icon.png" alt="Download"></a>
 
 <h1 id="pageHeader">Quizlet Audio</h1>
 
-<form action="frontend/convert_page.php" method="post">
-    <input id="linkInput" class="input" name="quizletLink" type="text" placeholder="Lernset Link" onClick="this.select();"
+<form action="frontend/convert_page.php" id="form" method="post">
+    <input id="linkInput" class="input" name="quizletLink" type="text" placeholder="Lernset Link"
+           onClick="this.select();"
            value="https://quizlet.com/373763301/deutsch-franzosisch-flash-cards/" required>
     <div class="allSilenceInputDiv">
         <div class="silenceDiv">
             <label for="shortSilenceInput">Pause zwischen Begriffe</label>
-            <input id="shortSilenceInput" name="shortSilenceDuration" class="silenceInput input" type="number" value="1" required>
+            <input id="shortSilenceInput" name="shortSilenceDuration" class="silenceInput input" type="number"
+                   value="1" required>
         </div>
         <div class="silenceDiv">
             <label for="longSilenceInput">Pause zu nächstem Wortpaar</label>
-            <input id="longSilenceInput" name="longSilenceDuration" class="silenceInput input" type="number" value="2" required>
+            <input id="longSilenceInput" name="longSilenceDuration" class="silenceInput input" type="number"
+                   value="2" required>
         </div>
     </div>
     <div class="testFieldDiv">
@@ -43,9 +53,29 @@
 
 </form>
 
-<a href="frontend/last_downloaded.php"><img class="downloadIcon" id="downloadIconResponsive" src="frontend/img/download_icon.png" alt="Download"></a>
-
+<a href="frontend/last_downloaded.php"><img class="downloadIcon" id="downloadIconResponsive"
+                                            src="frontend/img/download_icon.png" alt="Download"></a>
 <div class="scrollableVoid"></div>
+
+
+
+<!--    To display loader -->
+<div id="overlay">
+    <div id="loader">
+        <span></span>
+        <span></span>
+        <span></span>
+        <span></span>
+        <span></span>
+        <span></span>
+        <span></span>
+        <span></span>
+    </div>
+    <p id="loaderText">
+        <b>Bitte warten.</b> <br>Es dauert ungefähr 2 Sekunden pro Wortpaar.
+    </p>
+</div>
+
 <footer>
     <div class="navbar navbar-expand-sm navbar-light bg-light fixed-bottom site-footer">
         <div class="mx-auto footerContent">
@@ -59,6 +89,8 @@
         </div>
     </div>
 </footer>
+
+<script src="frontend/js/main.js"></script>
 </body>
 </html>
 
