@@ -27,26 +27,32 @@
 
 <form action="frontend/convert_page.php" id="form" method="post">
     <input id="linkInput" class="input" name="quizletLink" type="text" placeholder="Lernset Link"
-           onClick="this.select();"
-           value="https://quizlet.com/373763301/deutsch-franzosisch-flash-cards/" required>
+           onClick="this.select();" required>
     <div class="allSilenceInputDiv">
         <div class="silenceDiv">
-            <label for="shortSilenceInput">Pause zwischen Begriffe</label>
+            <label for="shortSilenceInput">Pause zwischen Begriffe (sek.)</label>
             <input id="shortSilenceInput" name="shortSilenceDuration" class="silenceInput input" type="number"
                    value="1" required>
         </div>
         <div class="silenceDiv">
-            <label for="longSilenceInput">Pause zu nächstem Wortpaar</label>
+            <label for="longSilenceInput">Pause zu nächstem Wortpaar (sek.)</label>
             <input id="longSilenceInput" name="longSilenceDuration" class="silenceInput input" type="number"
                    value="2" required>
         </div>
     </div>
-    <div class="testFieldDiv">
-        <label for="testInput" class="label">Test (nur 10 Karten)</label>
-        <label>
-            <input id="testInput" name="isTest" class="input" type="checkbox" placeholder="">
-            <span></span>
-        </label>
+    <div class="allSilenceInputDiv">
+        <div class="silenceDiv">
+            <label for="beginSilence">Pause vor Anfang (min.)</label>
+            <input id="beginSilence" name="beginSilenceDuration" class="silenceInput input" type="number"
+                   value="0" required>
+        </div>
+        <div class="silenceDiv">
+            <label for="testInput" class="label">Test (nur 10 Karten)</label>
+            <label>
+                <input id="testInput" name="isTest" class="input" type="checkbox" placeholder="">
+                <span></span>
+            </label>
+        </div>
     </div>
 
     <button type="submit" id="submitBtn" class="input">Audio generieren</button>
