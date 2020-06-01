@@ -3,7 +3,7 @@
 This project is to help out Patricia Ryter for her matura. She will experiment if it is possible to learn a language 
 while sleeping. For that the spoken words are needed which will be taken from [Quizlet](https://quizlet.com).
 
-## Requirements
+## What it must do
 The application should generate an audio file with all word. They have to be separated in different blocks of 20 words
 which will play in a loop 18 times. After the first loop the next 20 words are said 21 times and so on.  
 
