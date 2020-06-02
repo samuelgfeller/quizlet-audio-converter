@@ -91,7 +91,8 @@ Um genau zu sein, gibt es einen gewissen Bereich vom Seiteninhalt den uns intere
 Um diesen Bereich zu extrahieren, muss alles vor der gewissen Zeichenfolge `'window.Quizlet["setPageData"] = '` gelöscht werden. Dies wird mit den PHP-Funktionen 
 `str_replace` und `strstr` gemacht. 
 ```php
-$removedBefore = str_replace('window.Quizlet["setPageData"] = ',  '', strstr($homepage, 'window.Quizlet["setPageData"] = '));
+$removedBefore = str_replace('window.Quizlet["setPageData"] = ',  '', 
+    strstr($homepage, 'window.Quizlet["setPageData"] = '));
 ```
 Jetzt muss noch alles nach `'; QLoad("Quizlet.setPageData");'` weggenommen werden. Auch dies wird mit `strstr` gemacht. 
 ```php
@@ -104,4 +105,22 @@ Dieses Array wird zurückgegeben.
 return json_decode($removedAfterAndBefore, true)['termIdToTermsMap'];
 ```
 
+#### Pausen generieren
+Jetzt werden die 3 Pausen generiert nach den Benutzereingaben. Dies macht die Funktion `generateSilence`. 
+```php
+$converter->generateSilence('short-silence.mp3', (float)$_POST['shortSilenceDuration']);
+$converter->generateSilence('long-silence.mp3', (float) $_POST['longSilenceDuration']);
+$converter->generateSilence('begin-silence.mp3', (float) $_POST['beginSilenceDuration'] * 60); // In minutes
+```
 
+In dieser Funktion wird geprüft ob die eingegebene Dauer 0 ist. Wenn ja, wird es automatisch auf eine Sekunde gesetzt. 
+```php
+if ($duration === 0.0 || $duration === 0 || $duration === '0') {
+    $duration = 1;
+}
+```
+Dann wird der Befehl zuerst zusammengestellt und dann ausgeführt. Dieser wird von dem Programm FFMEPG interpretiert, welcher die Audio-Datei erstellt.
+```php
+$cmd = 'ffmpeg -f lavfi -y -i anullsrc=channel_layout=5.1:sample_rate=32000 -b:a 48K -t ' . $duration . ' ' . $this->config['silence_dir'] . '/' . $silenceName;
+shell_exec($cmd);
+```
