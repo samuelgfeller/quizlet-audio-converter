@@ -98,7 +98,7 @@ Jetzt muss noch alles nach `'; QLoad("Quizlet.setPageData");'` weggenommen werde
 $removedAfterAndBefore = strstr($removedBefore, '; QLoad("Quizlet.setPageData");', true);
 ```
 Das Resultat ist jetzt in der Variable `$removedAfterAndBefore`. Das Format in welchem die Daten vorhanden sind heisst `JSON`. Damit kann PHP nicht direkt arbeiten.  
-Es gibt aber eine Funktion, welche sei ganz einfach umwandelt in ein Array. **Ein Array ist eine Sammlung von Daten in einem strukturierten Format**. 
+Es gibt aber eine Funktion, welche sie ganz einfach umwandelt in ein Array. **Ein Array ist eine Sammlung von Daten in einem strukturierten Format**. 
 Dieses Array wird zurückgegeben. 
 ```php
 return json_decode($removedAfterAndBefore, true)['termIdToTermsMap'];
