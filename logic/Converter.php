@@ -57,7 +57,7 @@ class Converter
     public function retrieveCardInfos($quizletUrl)
     {
         $homepage = file_get_contents($quizletUrl);
-//        $homepage = $this->getUrlContent($quizletUrl);
+        // First remove all before 'window.Quizlet["setPageData"] = ' with strstr() and then remove 'window.Quizlet["setPageData"] = ' itself with str_replace()
         $removedBefore = str_replace(
             'window.Quizlet["setPageData"] = ',
             '',
