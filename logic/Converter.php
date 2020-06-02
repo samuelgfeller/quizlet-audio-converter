@@ -92,7 +92,7 @@ class Converter
      * in the right order with silences.
      *
      * The rule is that each 20 words are played in a loop (18 times).
-     * For that they are grouped and saved in the 2d array allBlocks
+     * For that they are grouped and saved in the 2D array allBlocks
      * and written to the corresponding block files and the filenames
      * are returned.
      *
@@ -142,9 +142,8 @@ class Converter
 
             // 4 lines are added each time so to have 20 words the number has to be multiplied by 4
             // Check array contains
-            if ($cardsAmount >= $amountCardsInBlock && count(
-                    $iteratingBlockValues
-                ) === ($amountCardsInBlock * $linesPerWordPair) - $cardWithNoAudioAmount) {
+            if ($cardsAmount >= $amountCardsInBlock && count($iteratingBlockValues)
+                === ($amountCardsInBlock * $linesPerWordPair) - $cardWithNoAudioAmount) {
                 // Save the cards from the first block to the general array
                 $allBlocks[] = $iteratingBlockValues;
 
@@ -153,9 +152,8 @@ class Converter
                 // Remove 20 to the card amount
                 $cardsAmount -= $amountCardsInBlock;
             } // If the amount of cards is less than 20 a block has to be filled with the last cards
-            elseif ($cardsAmount < $amountCardsInBlock && count(
-                    $iteratingBlockValues
-                ) === ($cardsAmount * $linesPerWordPair) - $cardWithNoAudioAmount) {
+            elseif ($cardsAmount < $amountCardsInBlock && count($iteratingBlockValues)
+                === ($cardsAmount * $linesPerWordPair) - $cardWithNoAudioAmount) {
                 // Save the cards from the first block to the general array
                 $allBlocks[] = $iteratingBlockValues;
                 // Reset cards for iterating block
@@ -181,7 +179,7 @@ class Converter
             $i++;
         }
 
-        return $allFileBlocks;
+            return $allFileBlocks;
     }
 
     /**

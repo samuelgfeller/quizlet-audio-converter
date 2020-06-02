@@ -4,7 +4,7 @@
 * **Programmiersprache**: PHP 7.4
 * **Entwicklungs-Umgebung**: Windows 10 computer mit einem lokalen apache Websever  
 * **Produktive Umgebung**: Apache-Webserver auf einem Linux CentOS 8 Server
-* **Medienbearbeitungs-Programm**: FFMPEG
+* **Medienbearbeitungs-Programm**: ffmpeg
 
 ### Struktur des Projektes
 * Im Ordner `config` gibt es die Datei `public_config.php`, welche die Konfigurationswerte hat, die im ganzen Programm benötigt werden.   
@@ -123,4 +123,219 @@ Dann wird der Befehl zuerst zusammengestellt und dann ausgeführt. Dieser wird v
 ```php
 $cmd = 'ffmpeg -f lavfi -y -i anullsrc=channel_layout=5.1:sample_rate=32000 -b:a 48K -t ' . $duration . ' ' . $this->config['silence_dir'] . '/' . $silenceName;
 shell_exec($cmd);
+```
+
+#### Audio Block Vorbereitung
+##### Regel
+Die Vorgabe ist, während ungefähr 30 Minuten sollen die gleichen 20 Wörter gespiert werden. Die ersten 20 Begriffe mit ihren Übersetzungen formen 
+den ersten "Block". Der Zweite Block besteht aus den nächsten 20 Wörter usw.. Jeder Block wird 18 Mal hintereinander durchgespielt bevor das selbe 
+gemacht wird mit dem nächsten Block, was mehroderweniger 30 Minuten bedeutet.
+ 
+##### Umsetzung
+Die Funktion wird aufgerufen von `logic/convert.php` wie gewohnt. Hier werden die Karten-Werte mitgegeben und ob es sich um einen Test handelt oder nicht.
+```php
+$isTest = isset($_POST['isTest']) && $_POST['isTest'] === 'on';
+$blockFiles = $converter->prepareAudioBlockFiles($allCards,$isTest);
+```
+Wenn es ein Test ist, werden in der Funktion von `logic/Converter.php` nur die ersten 10 Einträge behalten
+```php
+if ($isTest === true) {
+    $allCards = array_slice($allCards, 0, 10);
+}
+```
+Jetzt werden zuerst die Benötigten Variablen inizialisiert.
+```php
+$cardsAmount = count($allCards);
+$allBlocks = [];
+$iteratingBlockValues = [];
+
+$linesPerWordPair = 4; // depending on silences and which words are put into the array
+$amountCardsInBlock = 20;
+$cardWithNoAudioAmount = 0; // If the word or definition contains no url one is added to this var
+``` 
+Jetzt wird über alle Wörter gegangen in einer Schlaufe. Bei jedem Durchlauf mit `foreach` hat man zugang zu einem einzelnen Wert. 
+Der folgende code ist also jetzt in dieser Schlaufe und es wird mit nur einem Wortpaar jeweils gearbeitet. 
+```php
+foreach ($allCards as $key => $card) {
+```
+##### Url der Wörter
+In den abgeholten Daten von Quizlet befinden sich die Links zu den Audiodateien wobei das Wort in der entsprechenden Sprache gesprochen wird. 
+Es gibt aber zwei mögliche Quellen, den Quizlet hat die einten Wörter auf Amazon-Server und die Anderen bei ihnen selber als quizlet.com. Das Problem ist, dass 
+wenn die Wörter nicht bei Amazon sind, ist nicht die ganze URL vorhanden und somit muss zuerst abgefragt werden ob es eine Amazon URL ist oder von Quizlet und die 
+benötigten Anpassungen machen. Die URLs werden in den Variablen `$wordAudioUrl` und `$definitionAudioUrl` gespeichert. 
+```php
+ // The URL is either without the base (when its quizlet.com domain) or full url when the audio is on amazon server
+ $wordAudioUrl = strpos(
+     $card['_wordAudioUrl'], 'http'
+ ) !== false ? $card['_wordAudioUrl'] : $this->config['quizlet_domain'] . $card['_wordAudioUrl'];
+ $definitionAudioUrl = strpos(
+     $card['_definitionAudioUrl'], 'http'
+ ) !== false ? $card['_definitionAudioUrl'] : $this->config['quizlet_domain'] . $card['_definitionAudioUrl'];
+``` 
+Im nächsten Schritt werden die Audio-Dateien heruntergeladen und lokal gespeichert.   
+
+```php
+$iteratingBlockValues[] = "file '$this->relativeSilenceDir/long-silence.mp3'";
+$card['_definitionAudioUrl'] !== null ? $iteratingBlockValues[] = "file '" . $this->convertSampleRate(
+        $definitionAudioUrl,
+        $key . '-def.mp3'
+    ) . "'" : $cardWithNoAudioAmount++;
+$iteratingBlockValues[] = "file '$this->relativeSilenceDir/short-silence.mp3'";
+$card['_wordAudioUrl'] !== null ? $iteratingBlockValues[] = "file '" . $this->convertSampleRate(
+        $wordAudioUrl,
+        $key . '-word.mp3'
+    ) . "'" : $cardWithNoAudioAmount++;
+```
+Die Wörter von Amazon und Quizlet haben leider nicht die selbe "Sample Rate" was problem macht später beim zusammenführen der Dateien. 
+So muss diese konvertiert werden in ein einheitlichen Wert. Das ist der wichtige Inhalt von der Funktion `convertSampleRate()`. Die Konverstion macht wieder `ffmpeg`
+```php
+$cmd = 'ffmpeg -protocol_whitelist file,http,https,tcp,tls,crypto -y -i "' . $inputFile . '" -ar 32000 -ac 2 ' . $this->staticWordOutputDir . '/' . $outputName . '> wtf.txt';
+shell_exec($cmd);
+return $relativeWordOutputDir . '/' . $outputName;
+```
+Im nächsten Schritt werden diese Wörter vorbereitet und gruppiert in einem grossen Array `$allBlocks`. Es werden auch die Pausen eingeführt. 
+```php
+// 4 lines are added each time so to have 20 words the number has to be multiplied by 4
+// Check array contains
+if ($cardsAmount >= $amountCardsInBlock && count($iteratingBlockValues)
+    === ($amountCardsInBlock * $linesPerWordPair) - $cardWithNoAudioAmount) {
+    // Save the cards from the first block to the general array
+    $allBlocks[] = $iteratingBlockValues;
+    // Reset cards for iterating block
+    $iteratingBlockValues = [];
+    // Remove 20 to the card amount
+    $cardsAmount -= $amountCardsInBlock;
+} // If the amount of cards is less than 20 a block has to be filled with the last cards
+elseif ($cardsAmount < $amountCardsInBlock && count($iteratingBlockValues)
+    === ($cardsAmount * $linesPerWordPair) - $cardWithNoAudioAmount) {
+    // Save the cards from the first block to the general array
+    $allBlocks[] = $iteratingBlockValues;
+    // Reset cards for iterating block
+    $iteratingBlockValues = [];
+    // Remove 20 to the card amount
+    $cardsAmount -= $cardsAmount;
+}
+```
+
+In diesem Schritt wird eine Textdatei erstellt mit auf jeder Zeile der Pfad einer Audio-Datei. Es ist in der Reihenfolge wie sie später zusammengeführt 
+ werden sollen. Diese Text-Dateien werden zurückgegeben und das ist das Ende dieser Funktion.
+```php
+$allFileBlocks = [];
+$i = 1;
+foreach ($allBlocks as $block) {
+    $fileNameWithoutExtension = 'block-' . $i;
+    // Populate the files.txt with all the paths to the audio files
+    file_put_contents(
+        $this->config['output_dir'] . '/' . $fileNameWithoutExtension . '.txt',
+        implode(PHP_EOL, $block)
+    );
+    $allFileBlocks[] = $fileNameWithoutExtension;
+    $i++;
+}
+return $allFileBlocks;
+```
+Für jeden Block gibt es jetzt also eine Text-Datei mit den 20 Wörter und den Pausen. 
+Der Inhalt der Text-Datei kann so aussehen (ersten 6 Linien):
+```text
+file '../silences/long-silence.mp3'
+file '../output/words/12905570352-def.mp3'
+file '../silences/short-silence.mp3'
+file '../output/words/12905570352-word.mp3'
+file '../silences/long-silence.mp3'
+file '../output/words/12905570353-def.mp3'
+```
+
+#### Audio-Datei erstellen für jeden Block
+In diesem Schritt wird eine Audio-Datei erstellt für jeden Block. Also 20 Wörter mit Pausen und ihren Übersetzungen. 
+Parallel zu der Ausgabe Datei, welche alle Regeln beachtet mit den Wiederholungen, gibt es eine Datei zur Prüfung ob die Wörter und Pausen Stimmen.   
+`logic/convert.php` ruft die entprechende Funktion auf.
+```php
+$converter->createAudioBlocksAndControlFile($blockFiles);
+``` 
+In dieser Funktion werden die Audio-Dateien erstellt anhand der Text-Dateien für jeden Block. So gibt es jetzt eine Audio-Datei für jeden Block. 
+```php
+public function createAudioBlocksAndControlFile($blockFiles)
+{
+    $linesForControlFile = [];
+    foreach ($blockFiles as $file) {
+        $this->concatAndOutputAudio($file . '.txt', $file . '.mp3');
+        // The files are in the output so the relative path to this file is just the file name
+        $linesForControlFile[] = "file '$file.mp3'";
+    }
+    file_put_contents($this->config['output_dir'] . '/control-file.txt', implode(PHP_EOL, $linesForControlFile));
+    $this->concatAndOutputAudio('control-file.txt', 'control.mp3');
+}
+```
+
+#### Finale Datei erstellen
+Jetzt sind alle Elemente vorhanden um die geünschte Datei zu kreieren.
+```php
+$converter->createFinalFile($blockFiles);
+```
+In der Funktion wird zuerst eine Text-Datei erstellt mit der Reihenfolge der Audio-Dateien. 
+Die erse Linie ist die Anfangspause. 
+```php
+$linesForFinalFile[] = "file '../silences/begin-silence.mp3'";
+``` 
+Jetzt wird wieder mit der Funktion `foreach` über alle Blöcke iteriert und bei jedem Durchlauf werden 18 Linien von einem Block hinereinander hinzugefügt so werden 
+die 20 Wörter ungefähr während 30 Minuten durchlaufen.   
+Nach den 18 Repetitionen gibt es eine Pause von der Zeit der Pause zu dem nächsten Wortpaar multipliziert mal 3. 
+```php
+foreach ($blockFiles as $file) {
+    for ($i = 0; $i < 18; $i++) {
+        // mp3 files are created while control file is created
+        // The files are in the output so the relative path to this file is just the file name
+        $linesForFinalFile[] = "file '$file.mp3'";
+    }
+    $linesForFinalFile[] = "file '../silences/long-silence.mp3'";
+    $linesForFinalFile[] = "file '../silences/long-silence.mp3'";
+    $linesForFinalFile[] = "file '../silences/long-silence.mp3'";
+}
+```
+Jetzt kann die Finale Text-Datei erstellt werden.
+```php
+file_put_contents($this->config['output_dir'] . '/final-file.txt', implode(PHP_EOL, $linesForFinalFile));
+```
+Der Inhalt könnte so aussehen:
+```text
+file '../silences/begin-silence.mp3'
+file 'block-1.mp3'
+file 'block-1.mp3'
+file 'block-1.mp3'
+... (18x)
+file '../silences/long-silence.mp3'
+file '../silences/long-silence.mp3'
+file '../silences/long-silence.mp3'
+file 'block-2.mp3'
+file 'block-2.mp3'
+file 'block-2.mp3'
+... (18x)
+file '../silences/long-silence.mp3'
+file '../silences/long-silence.mp3'
+file '../silences/long-silence.mp3'
+file 'block-3.mp3'
+file 'block-3.mp3'
+file 'block-3.mp3'
+... (18x)
+file '../silences/long-silence.mp3'
+file '../silences/long-silence.mp3'
+file '../silences/long-silence.mp3'
+```
+Daraus muss nur noch die Audio Datei erstellt werden daraus. Dafür wird die Funktion `concatAndOutputAudio()` aufgerufen.
+```php
+$this->concatAndOutputAudio('final-file.txt', 'final.mp3');
+```
+In dieser Funktion passiert schlussendlich die Magie. Der Befehl an `ffmpeg` wird konstruiert und ausgeführt.
+```php
+$cmd = 'ffmpeg -f concat -safe 0 -protocol_whitelist file,http,https,tcp,tls -y -i ' . 
+    $this->config['output_dir'] . '/' . $inputFileListName . ' -b:a 48K -c copy ' .
+    $this->config['output_dir'] . '/' . $outputName;
+shell_exec($cmd);
+```
+Das Resultat ist jetzt `final.mp3`. 
+
+#### Aufräumen
+Für jeden Begriff wurde eine Audio-Datei erstellt, welche jetzt nicht mehr relevant ist aber Platz benötigt. So können diese gelöscht werden.
+```php
+array_map('unlink', glob($this->staticWordOutputDir . '/*.*'));
 ```
