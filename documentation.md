@@ -8,8 +8,8 @@
 
 ### Struktur des Projektes
 * Im Ordner `config` gibt es die Datei `public_config.php`, welche die Konfigurationswerte hat, die im ganzen Programm benötigt werden.   
-* Der Ordner `frontend` enthält alle Dateien, die Ansicht der Webseite angehen. Also Stil und Inhalte.
-* In dem Ordner `logic` wird das ganze rechnen, schneiden usw. gemacht. Die Audio-Dateien werden dort generiert.
+* Der Ordner `frontend` enthält alle Dateien, die die Ansicht der Webseite angehen. Also Stil und Inhalte.
+* In dem Ordner `logic` wird das ganze Rechnen, Schneiden und Zusammenführen usw. gemacht. Die Audio-Dateien werden dort generiert.
 * `output` enthält die generierten Audio-Dateien.
 * In `silences` werden die generierten "Pausen" gelagert, welche benutzt werden zwischen zwei Wörter. 
 
@@ -23,7 +23,7 @@ Auf der Startseite gibt es folgende Eingabefelder:
 * Eine Checkbox, um einen Testlauf machen zu können um das Resultat zu prüfen.  
 
 Die Eingaben können mit dem Knopf "Audio generieren" an den Server gesendet werden, welcher die erstellung der Audiodatei beginnt.  
-Die Struktur und Inhalte dieser Seite sind wurden in der Datei `index.html` definiert. 
+Die Struktur und Inhalte dieser Seite wurde in der Datei `index.html` definiert. 
 
 ### Nach dem Absenden
 Nach dem Absenden der Benutzereingaben, erscheint einen Loader mit der Information, dass gewartet werden muss.  
@@ -31,14 +31,14 @@ Die Javascript datei `frontend/js/main.js`, welche verantwortlich ist für das I
 Der Strukur des Loaders und Overlays ist in `index.html` festgelegt unter `<div id="overlay">`. Für die Stilisierung und das Aussehen ist die CSS-Datei 
 `frontend/css/loader.css` und `frontend/css/style.css` verwantwortlich. 
   
-Die Eingaben wurden an `frontend/convert_page.php` übermittelt, welcher es weitergibt an `logic/convert.php`. Dort wird das generieren der 
+Die Eingaben wurden an `frontend/convert_page.php` übermittelt, welcher es weitergibt an `logic/convert.php`. Dort wird das Generieren der 
 Audio-Datei gesteuert.
  
 ### Audio Erstellung
 #### Ausführungszeit erhöhen
 Das erste was `logic/convert.php` macht, ist die Maximale Ausführungszeit vom Programm auf 900 Sekunden erhöhen. Standardmässig darf ein PHP-Programm nur 30 Sekunden 
-ausgefürt werden, denn über dieser Zeit wird angenommen, dass ein Fehler passiert ist. In unserem Fall jedoch, dauert das herunterladen, konvertieren und
-generieren der neuen Datei viel längere Zeit. 
+ausgefürt werden, denn über dieser Zeit wird angenommen, dass ein Fehler passiert ist. In unserem Fall jedoch, dauert das Herunterladen, Konvertieren und
+Generieren der neuen Datei viel länger. 
 ```php
 ini_set('max_execution_time', '900');
 ```
@@ -62,7 +62,7 @@ else{
 ```
 
 #### Instanziieren des Objektes
-In `logic/convert.php` die Stuereung gemacht. Dort werden die Befehle in der richtigen Reihenfolge erzeugt. Die Funktionen für das eigentliche 
+In `logic/convert.php` wird die Stuereung gemacht. Dort werden die Befehle in der richtigen Reihenfolge erzeugt. Die Funktionen für das eigentliche 
 Verarbeiten der Audio-Dateien befindet sich in der Klasse `logic/Converter.php`.   
 Eine **Klasse** kann man sich vorstellen wie einen Bauplan von z.B. einem Auto. Es befinden sich alle Informationen darin aber das auto ist noch nicht gebaut, es kann
 noch nicht damit gefahren werden. Die Farbe ist auch noch nicht definiert.
@@ -71,7 +71,7 @@ Dies wird gemacht während dem sogenannten **Instanziieren** der Klasse.
 $converter = new Converter($config);
 ```
 Jetzt haben wir eine Instanz von dem `Converter` in der Variable `$converter` gespeichert und wir können damit arbeiten. Diese Instanz können wir auch **Objekt** nennen. 
-Als Parameter zur Erstellung des Objektes, werden die in `config/public_config.php` definierten Konfigurationswerten (z.B. wo die Ausgaben gemacht werden sollen) übergeben. 
+Als Parameter zur Erstellung des Objektes, werden die in `config/public_config.php` definierten Konfigurationswerten (z.B. die Domain der Applikation) übergeben.   
 Das ist wie die Farbe des Autos. Ein Element mit einer spezifischen Einstellung fixiert. Das Objekt wurde erstellt nicht mit einer spezifischen Farbe sondern 
 mit Konfigurationswerten. 
 
@@ -113,13 +113,13 @@ $converter->generateSilence('long-silence.mp3', (float) $_POST['longSilenceDurat
 $converter->generateSilence('begin-silence.mp3', (float) $_POST['beginSilenceDuration'] * 60); // In minutes
 ```
 
-In dieser Funktion wird geprüft ob die eingegebene Dauer 0 ist. Wenn ja, wird es automatisch auf eine Sekunde gesetzt. 
+In dieser Funktion wird geprüft ob die eingegebene Dauer *eine Variante von 0* ist. Wenn ja, wird es automatisch auf eine Sekunde gesetzt. 
 ```php
 if ($duration === 0.0 || $duration === 0 || $duration === '0') {
     $duration = 1;
 }
 ```
-Dann wird der Befehl zuerst zusammengestellt und dann ausgeführt. Dieser wird von dem Programm FFMEPG interpretiert, welcher die Audio-Datei erstellt.
+Dann wird der Befehl zuerst zusammengestellt und dann ausgeführt. Dieser wird von dem Programm `ffmpeg` interpretiert, welcher die Audio-Datei erstellt.
 ```php
 $cmd = 'ffmpeg -f lavfi -y -i anullsrc=channel_layout=5.1:sample_rate=32000 -b:a 48K -t ' . $duration . ' ' . $this->config['silence_dir'] . '/' . $silenceName;
 shell_exec($cmd);
@@ -127,8 +127,8 @@ shell_exec($cmd);
 
 #### Audio Block Vorbereitung
 ##### Regel
-Die Vorgabe ist, während ungefähr 30 Minuten sollen die gleichen 20 Wörter gespiert werden. Die ersten 20 Begriffe mit ihren Übersetzungen formen 
-den ersten "Block". Der Zweite Block besteht aus den nächsten 20 Wörter usw.. Jeder Block wird 18 Mal hintereinander durchgespielt bevor das selbe 
+Die Vorgabe ist, während ungefähr 30 Minuten sollen die gleichen 20 Wörter gespielt werden. Die ersten 20 Begriffe mit ihren Übersetzungen formen 
+den ersten "Block". Der zweite Block besteht aus den nächsten 20 Wörter usw.. Jeder Block wird 18 Mal hintereinander durchgespielt bevor das selbe 
 gemacht wird mit dem nächsten Block, was mehroderweniger 30 Minuten bedeutet.
  
 ##### Umsetzung
@@ -143,7 +143,7 @@ if ($isTest === true) {
     $allCards = array_slice($allCards, 0, 10);
 }
 ```
-Jetzt werden zuerst die Benötigten Variablen inizialisiert.
+Jetzt werden zuerst die Benötigten Variablen initialisiert.
 ```php
 $cardsAmount = count($allCards);
 $allBlocks = [];
@@ -160,7 +160,7 @@ foreach ($allCards as $key => $card) {
 ```
 ##### Url der Wörter
 In den abgeholten Daten von Quizlet befinden sich die Links zu den Audiodateien wobei das Wort in der entsprechenden Sprache gesprochen wird. 
-Es gibt aber zwei mögliche Quellen, den Quizlet hat die einten Wörter auf Amazon-Server und die Anderen bei ihnen selber als quizlet.com. Das Problem ist, dass 
+Es gibt aber zwei mögliche Quellen, denn Quizlet hat die einten Wörter auf Amazon-Server und die Anderen bei ihnen selber also quizlet.com. Das Problem ist, dass 
 wenn die Wörter nicht bei Amazon sind, ist nicht die ganze URL vorhanden und somit muss zuerst abgefragt werden ob es eine Amazon URL ist oder von Quizlet und die 
 benötigten Anpassungen machen. Die URLs werden in den Variablen `$wordAudioUrl` und `$definitionAudioUrl` gespeichert. 
 ```php
@@ -186,8 +186,8 @@ $card['_wordAudioUrl'] !== null ? $iteratingBlockValues[] = "file '" . $this->co
         $key . '-word.mp3'
     ) . "'" : $cardWithNoAudioAmount++;
 ```
-Die Wörter von Amazon und Quizlet haben leider nicht die selbe "Sample Rate" was problem macht später beim zusammenführen der Dateien. 
-So muss diese konvertiert werden in ein einheitlichen Wert. Das ist der wichtige Inhalt von der Funktion `convertSampleRate()`. Die Konverstion macht wieder `ffmpeg`
+Die Wörter von Amazon und Quizlet haben leider nicht die selbe "Sample Rate", was Probleme macht später beim zusammenführen der Dateien. 
+So muss diese konvertiert werden in ein einheitlichen Wert. Das ist der wichtige Inhalt von der Funktion `convertSampleRate()`. Die Konverstion macht `ffmpeg`
 ```php
 $cmd = 'ffmpeg -protocol_whitelist file,http,https,tcp,tls,crypto -y -i "' . $inputFile . '" -ar 32000 -ac 2 ' . $this->staticWordOutputDir . '/' . $outputName . '> wtf.txt';
 shell_exec($cmd);
@@ -268,7 +268,7 @@ public function createAudioBlocksAndControlFile($blockFiles)
 ```
 
 #### Finale Datei erstellen
-Jetzt sind alle Elemente vorhanden um die geünschte Datei zu kreieren.
+Jetzt sind alle Elemente vorhanden um die gewünschte Datei zu kreieren.
 ```php
 $converter->createFinalFile($blockFiles);
 ```
@@ -279,7 +279,7 @@ $linesForFinalFile[] = "file '../silences/begin-silence.mp3'";
 ``` 
 Jetzt wird wieder mit der Funktion `foreach` über alle Blöcke iteriert und bei jedem Durchlauf werden 18 Linien von einem Block hinereinander hinzugefügt so werden 
 die 20 Wörter ungefähr während 30 Minuten durchlaufen.   
-Nach den 18 Repetitionen gibt es eine Pause von der Zeit der Pause zu dem nächsten Wortpaar multipliziert mal 3. 
+Nach den 18 Repetitionen gibt es eine Pause von der Dauer einer dreifacher Pause zu dem nächsten Wortpaar. 
 ```php
 foreach ($blockFiles as $file) {
     for ($i = 0; $i < 18; $i++) {
