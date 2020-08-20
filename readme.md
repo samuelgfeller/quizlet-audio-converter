@@ -16,7 +16,8 @@ and converted to the same sample rate than those on Quizlet (32'000). This takes
 The speed is approximately 1s per 2 words (base + translation) if the sample rate doesnt have to be converted.
 
 A control-file which is basically all words spoken one after the other without redundancy is also provided to check if 
-all the words are spoken as expected. 
+all the words are spoken as expected.
 
+## [Technical documentation](https://github.com/samuelgfeller/quizlet-audio-converter/blob/master/documentation.md)
   
     
