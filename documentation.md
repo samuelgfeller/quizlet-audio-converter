@@ -48,7 +48,7 @@ Um zu enticklen ist es praktisch zu wissen wie viel Zeit jeder schritt benötigt
 der schon verloffenen Zeit. Produktiv wird diese Ausgabe jedoch nicht gemacht so wird diesen Schritt nicht weiter beschrieben. 
 
 #### Prüfen der Eingaben
-Damit das Programm arbeiten muss, braucht es die definierten Benutzereingaben. So wird geprüft, ob die Werte in den Variablen gesetzt sind und ob der eingegebene
+Damit das Programm arbeiten kann, braucht es die definierten Benutzereingaben. So wird geprüft, ob die Werte in den Variablen gesetzt sind und ob der eingegebene
 Link valide ist. 
 ```php
 if (isset($_POST['shortSilenceDuration'], $_POST['longSilenceDuration'], $_POST['quizletLink'], $_POST['beginSilenceDuration']) && 
