@@ -26,4 +26,8 @@ The speed is approximately 1s per 2 words (base + translation) if the sample rat
 but this varies greatly depending on the server performance.
 
 A control-file which is basically all words spoken one after the other without redundancy is also provided to check if 
-all the words are spoken as expected.
+all the words are spoken as expected. 
+
+## [Technical documentation in german](https://github.com/samuelgfeller/quizlet-audio-converter/blob/master/documentation.md)
+  
+    
