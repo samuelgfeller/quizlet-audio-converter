@@ -15,6 +15,9 @@ Quizlet doesn't provide the audio in their API but maps the audio in the website
 so the program first downloads the learn-set site HTML.   
 Then it extracts the links to the audio files and downloads them.  
 
+**Note: this project last was used in 2021 and might probably require some adjustments to work with
+the current Quizlet website.**
+
 Silences are created and then the audio is concatenated 
 using [ffmpeg demuxer](https://trac.ffmpeg.org/wiki/Concatenate#demuxer).  
 
@@ -29,5 +32,3 @@ A control-file which is basically all words spoken one after the other without r
 all the words are spoken as expected. 
 
 ## [Technical documentation in german](https://github.com/samuelgfeller/quizlet-audio-converter/blob/master/documentation.md)
-  
-    
